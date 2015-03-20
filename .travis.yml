@@ -1,0 +1,12 @@
+language: cpp haskell
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y ghc ghc-prof libghc-parsec3-dev
+compiler:
+  - gcc ghc
+script:
+  - cd src/
+  - make
+  - cd ../examples/
+  - make berkeley3d27pt
+  - ./3d27pt
