@@ -83,7 +83,7 @@ ppopp (mode, debug, showFile, userArgs) ((inFile, inDir):files) =
             then do execPath ++ "/src"
 	    else do pathLib
 	    	
-       putStrLn ("POCHOIR_LIB_PATH3: "++pochoirLibPath)
+       putStrLn ("POCHOIR_LIB_PATH: "++pochoirLibPath)
 {-
        cilkStubPath <- catch (getEnv "CILK_HEADER_PATH")(\e -> return "EnvError")
        whilst (cilkStubPath == "EnvError") $ do
