@@ -55,7 +55,7 @@ main = do args <- getArgs
           whilst (mode /= PNoPP) $ do
              ppopp (mode, debug, showFile, userArgs) (zip inFiles inDirs)
           -- pass everything to icc after preprocessing and Pochoir optimization
-          let iccArgs = userArgs
+          let iccArgs = userArgs ++ iccFlags
           putStrLn (icc ++ " " ++ intercalate " " iccArgs)
           rawSystem icc iccArgs
           whilst (showFile == False) $ do
@@ -70,13 +70,20 @@ ppopp :: (PMode, Bool, Bool, [String]) -> [(String, String)] -> IO ()
 ppopp (_, _, _, _) [] = return ()
 ppopp (mode, debug, showFile, userArgs) ((inFile, inDir):files) = 
     do putStrLn ("pochoir called with mode =" ++ show mode)
-       pochoirLibPath <- Control.catch (getEnv "POCHOIR_LIB_PATH")
+       pathLib <- Control.catch (getEnv "POCHOIR_LIB_PATH")
                          (\e -> do let err = show (e::Control.IOException)
-                                   return err)
-       whilst (pochoirLibPath == "EnvError") $ do
-          putStrLn ("Pochoir environment variable not set:")
-          putStrLn ("POCHOIR_LIB_PATH")
-          exitFailure
+                                   return "EnvError")
+       path <- getExecutablePath
+       name <- getProgName
+       let lengthName = length name
+       let lengthPath = length path
+       let execPath = take (lengthPath-(lengthName+1)) path
+       
+       let pochoirLibPath =  if pathLib == "EnvError"
+            then do execPath ++ "/src"
+	    else do pathLib
+	    	
+       putStrLn ("POCHOIR_LIB_PATH3: "++pochoirLibPath)
 {-
        cilkStubPath <- catch (getEnv "CILK_HEADER_PATH")(\e -> return "EnvError")
        whilst (cilkStubPath == "EnvError") $ do
@@ -131,7 +138,7 @@ pInitState = ParserState { pMode = PCaching, pState = Unrelated, pMacro = Map.em
 
 icc = "icpc"
 
-iccFlags = ["-O3", "-DNDEBUG", "-std=c++0x", "-Wall", "-Werror", "-ipo"]
+iccFlags = ["-O3", "-DNDEBUG", "-std=c++0x", "-Wall", "-ipo"]
 
 -- iccPPFlags = ["-P", "-C", "-DNCHECK_SHAPE", "-DNDEBUG", "-std=c++0x", "-Wall", "-Werror", "-ipo"]
 iccPPFlags = ["-P", "-C", "-DNCHECK_SHAPE", "-DNDEBUG", "-std=c++0x", "-Wall", "-Werror"]
@@ -141,6 +148,7 @@ iccDebugFlags = ["-DDEBUG", "-O0", "-g3", "-std=c++0x"]
 
 -- iccDebugPPFlags = ["-P", "-C", "-DCHECK_SHAPE", "-DDEBUG", "-g3", "-std=c++0x", "-include", "cilk_stub.h"]
 iccDebugPPFlags = ["-P", "-C", "-DCHECK_SHAPE", "-DDEBUG", "-g3", "-std=c++0x"]
+
 
 parseArgs :: ([String], [String], PMode, Bool, Bool, [String]) -> [String] -> ([String], [String], PMode, Bool, Bool, [String])
 parseArgs (inFiles, inDirs, mode, debug, showFile, userArgs) aL 
