@@ -184,13 +184,13 @@ inline void Algorithm<N_RANK>::walk_bicut(int t0, int t1, grid_info<N_RANK> cons
 			l_grid.dx0[i] = slope_[i];
 			l_grid.x1[i] = grid.x0[i] + sep;
 			l_grid.dx1[i] = -slope_[i];
-			cilk_spawn walk_bicut(t0, t1, l_grid, f);
+			cilk_spawn [&]{walk_bicut(t0, t1, l_grid, f);}();
 
 			l_grid.x0[i] = grid.x0[i] + sep;
 			l_grid.dx0[i] = slope_[i];
 			l_grid.x1[i] = grid.x1[i];
 			l_grid.dx1[i] = -slope_[i];
-			cilk_spawn walk_bicut(t0, t1, l_grid, f);
+			cilk_spawn [&]{walk_bicut(t0, t1, l_grid, f);}();
 #if DEBUG
 //			print_sync(stdout);
 #endif
@@ -198,19 +198,19 @@ inline void Algorithm<N_RANK>::walk_bicut(int t0, int t1, grid_info<N_RANK> cons
 			if (grid.dx0[i] != slope_[i]) {
 				l_grid.x0[i] = grid.x0[i]; l_grid.dx0[i] = grid.dx0[i];
 				l_grid.x1[i] = grid.x0[i]; l_grid.dx1[i] = slope_[i];
-				cilk_spawn walk_bicut(t0, t1, l_grid, f);
+				cilk_spawn [&]{walk_bicut(t0, t1, l_grid, f);}();
 			}
 
 			l_grid.x0[i] = grid.x0[i] + sep;
 			l_grid.dx0[i] = -slope_[i];
 			l_grid.x1[i] = grid.x0[i] + sep;
 			l_grid.dx1[i] = slope_[i];
-			cilk_spawn walk_bicut(t0, t1, l_grid, f);
+			cilk_spawn [&]{walk_bicut(t0, t1, l_grid, f);}();
 
 			if (grid.dx1[i] != -slope_[i]) {
 				l_grid.x0[i] = grid.x1[i]; l_grid.dx0[i] = -slope_[i];
 				l_grid.x1[i] = grid.x1[i]; l_grid.dx1[i] = grid.dx1[i];
-				cilk_spawn walk_bicut(t0, t1, l_grid, f);
+				cilk_spawn [&]{walk_bicut(t0, t1, l_grid, f);}();
 			}
 #if DEBUG
 			printf("%s:%d cut into %d dim\n", __FUNCTION__, __LINE__, i);
@@ -312,7 +312,7 @@ inline void Algorithm<N_RANK>::shorter_duo_sim_obase_space_cut(int t0, int t1, g
                 if (queue_len_[curr_dep_pointer] == 0)
                     shorter_duo_sim_obase_bicut(l_father->t0, l_father->t1, l_father->grid, f);
                 else
-                    cilk_spawn shorter_duo_sim_obase_bicut(l_father->t0, l_father->t1, l_father->grid, f);
+                    cilk_spawn [&]{shorter_duo_sim_obase_bicut(l_father->t0, l_father->t1, l_father->grid, f);}();
 #endif
             } else {
                 /* performing a space cut on dimension 'level' */
@@ -451,7 +451,7 @@ inline void Algorithm<N_RANK>::shorter_duo_sim_obase_space_cut_p(int t0, int t1,
                 if (queue_len_[curr_dep_pointer] == 0) {
                     shorter_duo_sim_obase_bicut_p(l_father->t0, l_father->t1, l_father->grid, f, bf);
                 } else {
-                    cilk_spawn shorter_duo_sim_obase_bicut_p(l_father->t0, l_father->t1, l_father->grid, f, bf);
+                    cilk_spawn [&]{shorter_duo_sim_obase_bicut_p(l_father->t0, l_father->t1, l_father->grid, f, bf);}();
                 }
 #endif
             } else {
@@ -609,7 +609,7 @@ inline void Algorithm<N_RANK>::duo_sim_obase_space_cut(int t0, int t1, grid_info
                 if (queue_len_[curr_dep_pointer] == 0)
                     duo_sim_obase_bicut(l_father->t0, l_father->t1, l_father->grid, f);
                 else
-                    cilk_spawn duo_sim_obase_bicut(l_father->t0, l_father->t1, l_father->grid, f);
+                    cilk_spawn [&]{duo_sim_obase_bicut(l_father->t0, l_father->t1, l_father->grid, f);}();
 #endif
             } else {
                 /* performing a space cut on dimension 'level' */
@@ -739,7 +739,7 @@ inline void Algorithm<N_RANK>::duo_sim_obase_space_cut_p(int t0, int t1, grid_in
                 if (queue_len_[curr_dep_pointer] == 0) {
                     duo_sim_obase_bicut_p(l_father->t0, l_father->t1, l_father->grid, f, bf);
                 } else {
-                    cilk_spawn duo_sim_obase_bicut_p(l_father->t0, l_father->t1, l_father->grid, f, bf);
+                    cilk_spawn [&]{duo_sim_obase_bicut_p(l_father->t0, l_father->t1, l_father->grid, f, bf);}();
                 }
 #endif
             } else {
@@ -907,7 +907,7 @@ inline void Algorithm<N_RANK>::sim_obase_space_cut(int t0, int t1, grid_info<N_R
                 if (queue_len_[curr_dep_pointer] == 0)
                     sim_obase_bicut(l_father->t0, l_father->t1, l_father->grid, f);
                 else
-                    cilk_spawn sim_obase_bicut(l_father->t0, l_father->t1, l_father->grid, f);
+                    cilk_spawn [&]{sim_obase_bicut(l_father->t0, l_father->t1, l_father->grid, f);}();
 #endif
             } else {
                 /* performing a space cut on dimension 'level' */
@@ -1021,7 +1021,7 @@ inline void Algorithm<N_RANK>::sim_obase_space_cut_p(int t0, int t1, grid_info<N
                 if (queue_len_[curr_dep_pointer] == 0) {
                     sim_obase_bicut_p(l_father->t0, l_father->t1, l_father->grid, f, bf);
                 } else {
-                    cilk_spawn sim_obase_bicut_p(l_father->t0, l_father->t1, l_father->grid, f, bf);
+                    cilk_spawn [&]{sim_obase_bicut_p(l_father->t0, l_father->t1, l_father->grid, f, bf);}();
                 }
 #endif
             } else {
@@ -1129,7 +1129,7 @@ inline void Algorithm<N_RANK>::shorter_duo_sim_obase_bicut(int t0, int t1, grid_
         tb = (grid.x1[i] + grid.dx1[i] * lt - grid.x0[i] - grid.dx0[i] * lt);
         bool cut_lb = (lb < tb);
         thres = (slope_[i] * lt);
-        sim_can_cut = sim_can_cut || (cut_lb ? (lb >= 2 * thres & lb > dx_recursive_[i]) : (tb >= 2 * thres & lb > dx_recursive_[i]));
+        sim_can_cut = sim_can_cut || (cut_lb ? ((lb >= (2 * thres)) & (lb > dx_recursive_[i])) : ((tb >= (2 * thres)) & (lb > dx_recursive_[i])));
         /* as long as there's one dimension can conduct a cut, we conduct a 
          * multi-dimensional cut!
          */
@@ -1202,7 +1202,7 @@ inline void Algorithm<N_RANK>::duo_sim_obase_bicut(int t0, int t1, grid_info<N_R
         tb = (grid.x1[i] + grid.dx1[i] * lt - grid.x0[i] - grid.dx0[i] * lt);
         bool cut_lb = (lb >= tb);
         thres = (2 * slope_[i] * lt);
-        sim_can_cut = sim_can_cut || (cut_lb ? (lb >= 2 * thres & lb > dx_recursive_[i]) : (tb >= 2 * thres & lb > dx_recursive_[i]));
+        sim_can_cut = sim_can_cut || (cut_lb ? ((lb >= 2 * thres) & (lb > dx_recursive_[i])) : ((tb >= 2 * thres) & (lb > dx_recursive_[i])));
         /* as long as there's one dimension can conduct a cut, we conduct a 
          * multi-dimensional cut!
          */
@@ -1283,7 +1283,7 @@ inline void Algorithm<N_RANK>::shorter_duo_sim_obase_bicut_p(int t0, int t1, gri
         */
         /* lb == phys_length_[i] indicates an initial cut! */
         bool cut_lb = (lb < tb);
-        sim_can_cut = sim_can_cut || (cut_lb ? (l_touch_boundary ? (lb >= 2 * thres & lb > dx_recursive_boundary_[i]) : (lb >= 2 * thres & lb > dx_recursive_[i])) : (l_touch_boundary ? (tb >= 2 * thres & lb > dx_recursive_boundary_[i]) : (tb > 2 * thres & lb > dx_recursive_[i])));
+        sim_can_cut = sim_can_cut || (cut_lb ? (l_touch_boundary ? ((lb >= 2 * thres) & (lb > dx_recursive_boundary_[i])) : ((lb >= 2 * thres) & (lb > dx_recursive_[i]))) : (l_touch_boundary ? ((tb >= 2 * thres) & (lb > dx_recursive_boundary_[i])) : ((tb > 2 * thres) & (lb > dx_recursive_[i]))));
         call_boundary |= l_touch_boundary;
 #if STAT
         l_count_cut = (l_can_cut ? l_count_cut + 1 : l_count_cut);
@@ -1399,7 +1399,7 @@ inline void Algorithm<N_RANK>::stevenj_space_cut(int t0, int t1, grid_info<N_RAN
                 if (queue_len_[curr_dep_pointer] == 0)
                     stevenj_bicut(l_father->t0, l_father->t1, l_father->grid, f);
                 else
-                    cilk_spawn stevenj_bicut(l_father->t0, l_father->t1, l_father->grid, f);
+                    cilk_spawn [&]{stevenj_bicut(l_father->t0, l_father->t1, l_father->grid, f);}();
 #endif
             } else {
                 /* performing a space cut on dimension 'level' */
@@ -1538,7 +1538,7 @@ inline void Algorithm<N_RANK>::stevenj_space_cut_p(int t0, int t1, grid_info<N_R
                 if (queue_len_[curr_dep_pointer] == 0) {
                     stevenj_bicut_p(l_father->t0, l_father->t1, l_father->grid, f, bf);
                 } else {
-                    cilk_spawn stevenj_bicut_p(l_father->t0, l_father->t1, l_father->grid, f, bf);
+                    cilk_spawn [&]{stevenj_bicut_p(l_father->t0, l_father->t1, l_father->grid, f, bf);}();
                 }
 #endif
             } else {
@@ -1672,7 +1672,7 @@ inline void Algorithm<N_RANK>::stevenj_bicut(int t0, int t1, grid_info<N_RANK> c
         tb = (grid.x1[i] + grid.dx1[i] * lt - grid.x0[i] - grid.dx0[i] * lt);
         bool cut_lb = (lb < tb);
         thres = (slope_[i] * lt);
-        sim_can_cut = sim_can_cut || (cut_lb ? (lb >= 2 * thres & lb > dx_recursive_[i]) : (tb >= 2 * thres & lb > dx_recursive_[i]));
+        sim_can_cut = sim_can_cut || (cut_lb ? ((lb >= 2 * thres) & (lb > dx_recursive_[i])) : ((tb >= 2 * thres) & (lb > dx_recursive_[i])));
     }
 
     if (sim_can_cut) {
@@ -1709,7 +1709,7 @@ inline void Algorithm<N_RANK>::stevenj_bicut_p(int t0, int t1, grid_info<N_RANK>
         */
         /* lb == phys_length_[i] indicates an initial cut! */
         bool cut_lb = (lb < tb);
-        sim_can_cut = sim_can_cut || (cut_lb ? (l_touch_boundary ? (lb >= 2 * thres & lb > dx_recursive_boundary_[i]) : (lb >= 2 * thres & lb > dx_recursive_[i])) : (l_touch_boundary ? (tb >= 2 * thres & lb > dx_recursive_boundary_[i]) : (tb > 2 * thres & lb > dx_recursive_[i])));
+        sim_can_cut = sim_can_cut || (cut_lb ? (l_touch_boundary ? ((lb >= 2 * thres) & (lb > dx_recursive_boundary_[i])) : ((lb >= 2 * thres) & (lb > dx_recursive_[i]))) : (l_touch_boundary ? ((tb >= 2 * thres) & (lb > dx_recursive_boundary_[i])) : ((tb > 2 * thres) & (lb > dx_recursive_[i]))));
         call_boundary |= l_touch_boundary;
     }
 
@@ -1784,7 +1784,7 @@ inline void Algorithm<N_RANK>::duo_sim_obase_bicut_p(int t0, int t1, grid_info<N
         */
         /* lb == phys_length_[i] indicates an initial cut! */
         bool cut_lb = (lb >= tb);
-        sim_can_cut = sim_can_cut || (cut_lb ? (l_touch_boundary ? (lb >= 2 * thres & lb > dx_recursive_boundary_[i]) : (lb >= 2 * thres & lb > dx_recursive_[i])) : (l_touch_boundary ? (tb >= 2 * thres & lb > dx_recursive_boundary_[i]) : (tb > 2 * thres & lb > dx_recursive_[i])));
+        sim_can_cut = sim_can_cut || (cut_lb ? (l_touch_boundary ? ((lb >= 2 * thres) & (lb > dx_recursive_boundary_[i])) : ((lb >= 2 * thres) & (lb > dx_recursive_[i]))) : (l_touch_boundary ? ((tb >= 2 * thres) & (lb > dx_recursive_boundary_[i])) : ((tb > 2 * thres) & (lb > dx_recursive_[i]))));
         call_boundary |= l_touch_boundary;
 #if STAT
         l_count_cut = (l_can_cut ? l_count_cut + 1 : l_count_cut);
@@ -1881,7 +1881,7 @@ inline void Algorithm<N_RANK>::sim_obase_bicut(int t0, int t1, grid_info<N_RANK>
         int lb, thres, tb;
         lb = (grid.x1[i] - grid.x0[i]);
         thres = (2 * slope_[i] * lt);
-        sim_can_cut = sim_can_cut || (lb >= 2 * thres & lb > dx_recursive_[i]);
+        sim_can_cut = sim_can_cut || ((lb >= 2 * thres) & (lb > dx_recursive_[i]));
         /* as long as there's one dimension can conduct a cut, we conduct a 
          * multi-dimensional cut!
          */
@@ -1961,7 +1961,7 @@ inline void Algorithm<N_RANK>::sim_obase_bicut_p(int t0, int t1, grid_info<N_RAN
          * the overhead on boundary
         */
         /* lb == phys_length_[i] indicates an initial cut! */
-        sim_can_cut = sim_can_cut || (l_touch_boundary ? (lb >= 2 * thres & lb > dx_recursive_boundary_[i]) : (lb >= 2 * thres & lb > dx_recursive_[i]));
+        sim_can_cut = sim_can_cut || (l_touch_boundary ? ((lb >= 2 * thres) & (lb > dx_recursive_boundary_[i])) : ((lb >= 2 * thres) & (lb > dx_recursive_[i])));
         call_boundary |= l_touch_boundary;
 #if STAT
         l_count_cut = (l_can_cut ? l_count_cut + 1 : l_count_cut);
@@ -2085,14 +2085,14 @@ inline void Algorithm<N_RANK>::walk_adaptive(int t0, int t1, grid_info<N_RANK> c
 					l_grid.dx0[i] = slope_[i];
 					l_grid.x1[i] = grid.x0[i] + sep * (j+1);
 					l_grid.dx1[i] = -slope_[i];
-					cilk_spawn walk_adaptive(t0, t1, l_grid, f);
+					cilk_spawn [&]{walk_adaptive(t0, t1, l_grid, f);}();
 				}
 	//			j_loc = r-1;
 				l_grid.x0[i] = grid.x0[i] + sep * (r-1);
 				l_grid.dx0[i] = slope_[i];
 				l_grid.x1[i] = grid.x1[i];
 				l_grid.dx1[i] = -slope_[i];
-				cilk_spawn walk_adaptive(t0, t1, l_grid, f);
+				cilk_spawn [&]{walk_adaptive(t0, t1, l_grid, f);}();
 #if DEBUG
 //				print_sync(stdout);
 #endif
@@ -2100,19 +2100,19 @@ inline void Algorithm<N_RANK>::walk_adaptive(int t0, int t1, grid_info<N_RANK> c
 				if (grid.dx0[i] != slope_[i]) {
 					l_grid.x0[i] = grid.x0[i]; l_grid.dx0[i] = grid.dx0[i];
 					l_grid.x1[i] = grid.x0[i]; l_grid.dx1[i] = slope_[i];
-					cilk_spawn walk_adaptive(t0, t1, l_grid, f);
+					cilk_spawn [&]{walk_adaptive(t0, t1, l_grid, f);}();
 				}
 				for (int j = 1; j < r; ++j) {
 					l_grid.x0[i] = grid.x0[i] + sep * j;
 					l_grid.dx0[i] = -slope_[i];
 					l_grid.x1[i] = grid.x0[i] + sep * j;
 					l_grid.dx1[i] = slope_[i];
-					cilk_spawn walk_adaptive(t0, t1, l_grid, f);
+					cilk_spawn [&]{walk_adaptive(t0, t1, l_grid, f);}();
 				}
 				if (grid.dx1[i] != -slope_[i]) {
 					l_grid.x0[i] = grid.x1[i]; l_grid.dx0[i] = -slope_[i];
 					l_grid.x1[i] = grid.x1[i]; l_grid.dx1[i] = grid.dx1[i];
-					cilk_spawn walk_adaptive(t0, t1, l_grid, f);
+					cilk_spawn [&]{walk_adaptive(t0, t1, l_grid, f);}();
 				}
 #if 0
 				printf("%s:%d cut into %d dim\n", __FUNCTION__, __LINE__, i);
@@ -2186,9 +2186,9 @@ inline void Algorithm<N_RANK>::walk_bicut_boundary_p(int t0, int t1, grid_info<N
 			l_son_grid.x1[i] = l_start + sep;
 			l_son_grid.dx1[i] = -slope_[i];
             if (call_boundary) {
-                cilk_spawn walk_bicut_boundary_p(t0, t1, l_son_grid, f, bf);
+                cilk_spawn [&]{walk_bicut_boundary_p(t0, t1, l_son_grid, f, bf);}();
             } else {
-                cilk_spawn walk_bicut(t0, t1, l_son_grid, f);
+                cilk_spawn [&]{walk_bicut(t0, t1, l_son_grid, f);}();
             }
 
 			l_son_grid.x0[i] = l_start + sep;
@@ -2210,9 +2210,9 @@ inline void Algorithm<N_RANK>::walk_bicut_boundary_p(int t0, int t1, grid_info<N
 			l_son_grid.x1[i] = l_start + sep;
 			l_son_grid.dx1[i] = slope_[i];
             if (call_boundary) {
-                cilk_spawn walk_bicut_boundary_p(t0, t1, l_son_grid, f, bf);
+                cilk_spawn [&]{walk_bicut_boundary_p(t0, t1, l_son_grid, f, bf);}();
             } else {
-                cilk_spawn walk_bicut(t0, t1, l_son_grid, f);
+                cilk_spawn [&]{walk_bicut(t0, t1, l_son_grid, f);}();
             }
 
 			if (l_start == phys_grid_.x0[i] && l_end == phys_grid_.x1[i]) {
@@ -2222,9 +2222,9 @@ inline void Algorithm<N_RANK>::walk_bicut_boundary_p(int t0, int t1, grid_info<N
 				l_son_grid.x1[i] = l_end;
 				l_son_grid.dx1[i] = slope_[i];
                 if (call_boundary) {
-                    cilk_spawn walk_bicut_boundary_p(t0, t1, l_son_grid, f, bf);
+                    cilk_spawn [&]{walk_bicut_boundary_p(t0, t1, l_son_grid, f, bf);}();
                 } else {
-                    cilk_spawn walk_bicut(t0, t1, l_son_grid, f);
+                    cilk_spawn [&]{walk_bicut(t0, t1, l_son_grid, f);}();
                 }
 			} else {
 				if (l_father_grid.dx0[i] != slope_[i]) {
@@ -2233,9 +2233,9 @@ inline void Algorithm<N_RANK>::walk_bicut_boundary_p(int t0, int t1, grid_info<N
 					l_son_grid.x1[i] = l_start; 
 					l_son_grid.dx1[i] = slope_[i];
                     if (call_boundary) {
-                        cilk_spawn walk_bicut_boundary_p(t0, t1, l_son_grid, f, bf);
+                        cilk_spawn [&]{walk_bicut_boundary_p(t0, t1, l_son_grid, f, bf);}();
                     } else {
-                        cilk_spawn walk_bicut(t0, t1, l_son_grid, f);
+                        cilk_spawn [&]{walk_bicut(t0, t1, l_son_grid, f);}();
                     }
 				}
 				if (l_father_grid.dx1[i] != -slope_[i]) {
@@ -2244,9 +2244,9 @@ inline void Algorithm<N_RANK>::walk_bicut_boundary_p(int t0, int t1, grid_info<N
 					l_son_grid.x1[i] = l_end; 
 					l_son_grid.dx1[i] = l_father_grid.dx1[i];
                     if (call_boundary) {
-                        cilk_spawn walk_bicut_boundary_p(t0, t1, l_son_grid, f, bf);
+                        cilk_spawn [&]{walk_bicut_boundary_p(t0, t1, l_son_grid, f, bf);}();
                     } else {
-                        cilk_spawn walk_bicut(t0, t1, l_son_grid, f);
+                        cilk_spawn [&]{walk_bicut(t0, t1, l_son_grid, f);}();
                     }
 				}
 			}
@@ -2362,9 +2362,9 @@ inline void Algorithm<N_RANK>::walk_ncores_boundary_p(int t0, int t1, grid_info<
 					l_son_grid.x1[i] = l_start + sep * (j+1);
 					l_son_grid.dx1[i] = -slope_[i];
                     if (call_boundary) {
-                        cilk_spawn walk_ncores_boundary_p(t0, t1, l_son_grid, f, bf);
+                        cilk_spawn [&]{walk_ncores_boundary_p(t0, t1, l_son_grid, f, bf);}();
                     } else {
-                        cilk_spawn walk_adaptive(t0, t1, l_son_grid, f);
+                        cilk_spawn [&]{walk_adaptive(t0, t1, l_son_grid, f);}();
                     }
 				}
 				l_son_grid.x0[i] = l_start + sep * j;
@@ -2386,9 +2386,9 @@ inline void Algorithm<N_RANK>::walk_ncores_boundary_p(int t0, int t1, grid_info<
 					l_son_grid.x1[i] = l_start + sep * j;
 					l_son_grid.dx1[i] = slope_[i];
                     if (call_boundary) {
-                        cilk_spawn walk_ncores_boundary_p(t0, t1, l_son_grid, f, bf);
+                        cilk_spawn [&]{walk_ncores_boundary_p(t0, t1, l_son_grid, f, bf);}();
                     } else {
-                        cilk_spawn walk_adaptive(t0, t1, l_son_grid, f);
+                        cilk_spawn [&]{walk_adaptive(t0, t1, l_son_grid, f);}();
                     }
 				}
 				if (l_start == phys_grid_.x0[i] && l_end == phys_grid_.x1[i]) {
@@ -2398,9 +2398,9 @@ inline void Algorithm<N_RANK>::walk_ncores_boundary_p(int t0, int t1, grid_info<
 					l_son_grid.x1[i] = l_end;
 					l_son_grid.dx1[i] = slope_[i];
                     if (call_boundary) {
-                        cilk_spawn walk_ncores_boundary_p(t0, t1, l_son_grid, f, bf);
+                        cilk_spawn [&]{walk_ncores_boundary_p(t0, t1, l_son_grid, f, bf);}();
                     } else {
-                        cilk_spawn walk_adaptive(t0, t1, l_son_grid, f);
+                        cilk_spawn [&]{walk_adaptive(t0, t1, l_son_grid, f);}();
                     }
 				} else {
 					if (l_father_grid.dx0[i] != slope_[i]) {
@@ -2409,9 +2409,9 @@ inline void Algorithm<N_RANK>::walk_ncores_boundary_p(int t0, int t1, grid_info<
 						l_son_grid.x1[i] = l_start; 
 						l_son_grid.dx1[i] = slope_[i];
                         if (call_boundary) {
-                            cilk_spawn walk_ncores_boundary_p(t0, t1, l_son_grid, f, bf);
+                            cilk_spawn [&]{walk_ncores_boundary_p(t0, t1, l_son_grid, f, bf);}();
                         } else {
-                            cilk_spawn walk_adaptive(t0, t1, l_son_grid, f);
+                            cilk_spawn [&]{walk_adaptive(t0, t1, l_son_grid, f);}();
                         }
 					}
 					if (l_father_grid.dx1[i] != -slope_[i]) {
@@ -2420,9 +2420,9 @@ inline void Algorithm<N_RANK>::walk_ncores_boundary_p(int t0, int t1, grid_info<
 						l_son_grid.x1[i] = l_end; 
 						l_son_grid.dx1[i] = l_father_grid.dx1[i];
                         if (call_boundary) {
-                            cilk_spawn walk_ncores_boundary_p(t0, t1, l_son_grid, f, bf);
+                            cilk_spawn [&]{walk_ncores_boundary_p(t0, t1, l_son_grid, f, bf);}();
                         } else {
-                            cilk_spawn walk_adaptive(t0, t1, l_son_grid, f);
+                            cilk_spawn [&]{walk_adaptive(t0, t1, l_son_grid, f);}();
                         }
 					}
 				}
@@ -2485,13 +2485,13 @@ inline void Algorithm<N_RANK>::obase_bicut(int t0, int t1, grid_info<N_RANK> con
 			l_grid.dx0[i] = slope_[i];
 			l_grid.x1[i] = grid.x0[i] + sep;
 			l_grid.dx1[i] = -slope_[i];
-			cilk_spawn obase_bicut(t0, t1, l_grid, f);
+			cilk_spawn [&]{obase_bicut(t0, t1, l_grid, f);}();
 
 			l_grid.x0[i] = grid.x0[i] + sep;
 			l_grid.dx0[i] = slope_[i];
 			l_grid.x1[i] = grid.x1[i];
 			l_grid.dx1[i] = -slope_[i];
-			cilk_spawn obase_bicut(t0, t1, l_grid, f);
+			cilk_spawn [&]{obase_bicut(t0, t1, l_grid, f);}();
 #if DEBUG
 //			print_sync(stdout);
 #endif
@@ -2499,19 +2499,19 @@ inline void Algorithm<N_RANK>::obase_bicut(int t0, int t1, grid_info<N_RANK> con
 			if (grid.dx0[i] != slope_[i]) {
 				l_grid.x0[i] = grid.x0[i]; l_grid.dx0[i] = grid.dx0[i];
 				l_grid.x1[i] = grid.x0[i]; l_grid.dx1[i] = slope_[i];
-				cilk_spawn obase_bicut(t0, t1, l_grid, f);
+				cilk_spawn [&]{obase_bicut(t0, t1, l_grid, f);}();
 			}
 
 			l_grid.x0[i] = grid.x0[i] + sep;
 			l_grid.dx0[i] = -slope_[i];
 			l_grid.x1[i] = grid.x0[i] + sep;
 			l_grid.dx1[i] = slope_[i];
-			cilk_spawn obase_bicut(t0, t1, l_grid, f);
+			cilk_spawn [&]{obase_bicut(t0, t1, l_grid, f);}();
 
 			if (grid.dx1[i] != -slope_[i]) {
 				l_grid.x0[i] = grid.x1[i]; l_grid.dx0[i] = -slope_[i];
 				l_grid.x1[i] = grid.x1[i]; l_grid.dx1[i] = grid.dx1[i];
-				cilk_spawn obase_bicut(t0, t1, l_grid, f);
+				cilk_spawn [&]{obase_bicut(t0, t1, l_grid, f);}();
 			}
 #if DEBUG
 			printf("%s:%d cut into %d dim\n", __FUNCTION__, __LINE__, i);
@@ -2594,14 +2594,14 @@ inline void Algorithm<N_RANK>::obase_m(int t0, int t1, grid_info<N_RANK> const g
 					l_grid.dx0[i] = slope_[i];
 					l_grid.x1[i] = grid.x0[i] + sep * (j+1);
 					l_grid.dx1[i] = -slope_[i];
-					cilk_spawn obase_m(t0, t1, l_grid, f);
+					cilk_spawn [&]{obase_m(t0, t1, l_grid, f);}();
 				}
 	//			j_loc = r-1;
 				l_grid.x0[i] = grid.x0[i] + sep * (r-1);
 				l_grid.dx0[i] = slope_[i];
 				l_grid.x1[i] = grid.x1[i];
 				l_grid.dx1[i] = -slope_[i];
-				cilk_spawn obase_m(t0, t1, l_grid, f);
+				cilk_spawn [&]{obase_m(t0, t1, l_grid, f);}();
 #if DEBUG
 //				print_sync(stdout);
 #endif
@@ -2609,19 +2609,19 @@ inline void Algorithm<N_RANK>::obase_m(int t0, int t1, grid_info<N_RANK> const g
 				if (grid.dx0[i] != slope_[i]) {
 					l_grid.x0[i] = grid.x0[i]; l_grid.dx0[i] = grid.dx0[i];
 					l_grid.x1[i] = grid.x0[i]; l_grid.dx1[i] = slope_[i];
-					cilk_spawn obase_m(t0, t1, l_grid, f);
+					cilk_spawn [&]{obase_m(t0, t1, l_grid, f);}();
 				}
 				for (int j = 1; j < r; ++j) {
 					l_grid.x0[i] = grid.x0[i] + sep * j;
 					l_grid.dx0[i] = -slope_[i];
 					l_grid.x1[i] = grid.x0[i] + sep * j;
 					l_grid.dx1[i] = slope_[i];
-					cilk_spawn obase_m(t0, t1, l_grid, f);
+					cilk_spawn [&]{base_m(t0, t1, l_grid, f);}();
 				}
 				if (grid.dx1[i] != -slope_[i]) {
 					l_grid.x0[i] = grid.x1[i]; l_grid.dx0[i] = -slope_[i];
 					l_grid.x1[i] = grid.x1[i]; l_grid.dx1[i] = grid.dx1[i];
-					cilk_spawn obase_m(t0, t1, l_grid, f);
+					cilk_spawn [&]{obase_m(t0, t1, l_grid, f);}();
 				}
 #if 0
 				printf("%s:%d cut into %d dim\n", __FUNCTION__, __LINE__, i);
@@ -2697,14 +2697,14 @@ inline void Algorithm<N_RANK>::obase_adaptive(int t0, int t1, grid_info<N_RANK> 
 					l_grid.dx0[i] = slope_[i];
 					l_grid.x1[i] = grid.x0[i] + sep * (j+1);
 					l_grid.dx1[i] = -slope_[i];
-					cilk_spawn obase_adaptive(t0, t1, l_grid, f);
+					cilk_spawn [&]{obase_adaptive(t0, t1, l_grid, f);}();
 				}
 	//			j_loc = r-1;
 				l_grid.x0[i] = grid.x0[i] + sep * (r-1);
 				l_grid.dx0[i] = slope_[i];
 				l_grid.x1[i] = grid.x1[i];
 				l_grid.dx1[i] = -slope_[i];
-				cilk_spawn obase_adaptive(t0, t1, l_grid, f);
+				cilk_spawn [&]{obase_adaptive(t0, t1, l_grid, f);}();
 #if DEBUG
 //				print_sync(stdout);
 #endif
@@ -2712,19 +2712,19 @@ inline void Algorithm<N_RANK>::obase_adaptive(int t0, int t1, grid_info<N_RANK> 
 				if (grid.dx0[i] != slope_[i]) {
 					l_grid.x0[i] = grid.x0[i]; l_grid.dx0[i] = grid.dx0[i];
 					l_grid.x1[i] = grid.x0[i]; l_grid.dx1[i] = slope_[i];
-					cilk_spawn obase_adaptive(t0, t1, l_grid, f);
+					cilk_spawn [&]{obase_adaptive(t0, t1, l_grid, f);}();
 				}
 				for (int j = 1; j < r; ++j) {
 					l_grid.x0[i] = grid.x0[i] + sep * j;
 					l_grid.dx0[i] = -slope_[i];
 					l_grid.x1[i] = grid.x0[i] + sep * j;
 					l_grid.dx1[i] = slope_[i];
-					cilk_spawn obase_adaptive(t0, t1, l_grid, f);
+					cilk_spawn [&]{obase_adaptive(t0, t1, l_grid, f);}();
 				}
 				if (grid.dx1[i] != -slope_[i]) {
 					l_grid.x0[i] = grid.x1[i]; l_grid.dx0[i] = -slope_[i];
 					l_grid.x1[i] = grid.x1[i]; l_grid.dx1[i] = grid.dx1[i];
-					cilk_spawn obase_adaptive(t0, t1, l_grid, f);
+					cilk_spawn [&]{obase_adaptive(t0, t1, l_grid, f);}();
 				}
 #if 0
 				printf("%s:%d cut into %d dim\n", __FUNCTION__, __LINE__, i);
@@ -2791,7 +2791,7 @@ inline void Algorithm<N_RANK>::obase_bicut_boundary_p(int t0, int t1, grid_info<
 			l_son_grid.dx0[i] = slope_[i];
 			l_son_grid.x1[i] = l_start + sep;
 			l_son_grid.dx1[i] = -slope_[i];
-            cilk_spawn obase_bicut_boundary_p(t0, t1, l_son_grid, bf);
+            cilk_spawn [&]{obase_bicut_boundary_p(t0, t1, l_son_grid, bf);}();
 
 			l_son_grid.x0[i] = l_start + sep * j;
 			l_son_grid.dx0[i] = slope_[i];
@@ -2806,28 +2806,28 @@ inline void Algorithm<N_RANK>::obase_bicut_boundary_p(int t0, int t1, grid_info<
 			l_son_grid.dx0[i] = -slope_[i];
 			l_son_grid.x1[i] = l_start + sep;
 			l_son_grid.dx1[i] = slope_[i];
-            cilk_spawn obase_bicut_boundary_p(t0, t1, l_son_grid, bf);
+            cilk_spawn [&]{obase_bicut_boundary_p(t0, t1, l_son_grid, bf);}();
 			if (l_start == phys_grid_.x0[i] && l_end == phys_grid_.x1[i]) {
         //        printf("merge triagles!\n");
 				l_son_grid.x0[i] = l_end;
 				l_son_grid.dx0[i] = -slope_[i];
 				l_son_grid.x1[i] = l_end;
 				l_son_grid.dx1[i] = slope_[i];
-                cilk_spawn obase_bicut_boundary_p(t0, t1, l_son_grid, bf);
+                cilk_spawn [&]{obase_bicut_boundary_p(t0, t1, l_son_grid, bf);}();
 			} else {
 				if (l_father_grid.dx0[i] != slope_[i]) {
 					l_son_grid.x0[i] = l_start; 
 					l_son_grid.dx0[i] = l_father_grid.dx0[i];
 					l_son_grid.x1[i] = l_start; 
 					l_son_grid.dx1[i] = slope_[i];
-                    cilk_spawn obase_bicut_boundary_p(t0, t1, l_son_grid, bf);
+                    cilk_spawn [&]{obase_bicut_boundary_p(t0, t1, l_son_grid, bf);}();
 				}
 				if (l_father_grid.dx1[i] != -slope_[i]) {
 					l_son_grid.x0[i] = l_end; 
 					l_son_grid.dx0[i] = -slope_[i];
 					l_son_grid.x1[i] = l_end; 
 					l_son_grid.dx1[i] = l_father_grid.dx1[i];
-                    cilk_spawn obase_bicut_boundary_p(t0, t1, l_son_grid, bf);
+                    cilk_spawn [&]{obase_bicut_boundary_p(t0, t1, l_son_grid, bf);}();
 				}
 			}
             return;
@@ -2897,7 +2897,7 @@ inline void Algorithm<N_RANK>::obase_boundary_p(int t0, int t1, grid_info<N_RANK
 					l_son_grid.dx0[i] = slope_[i];
 					l_son_grid.x1[i] = l_start + sep * (j+1);
 					l_son_grid.dx1[i] = -slope_[i];
-                    cilk_spawn obase_boundary_p(t0, t1, l_son_grid, bf);
+                    cilk_spawn [&]{obase_boundary_p(t0, t1, l_son_grid, bf);}();
 				}
 				l_son_grid.x0[i] = l_start + sep * j;
 				l_son_grid.dx0[i] = slope_[i];
@@ -2913,7 +2913,7 @@ inline void Algorithm<N_RANK>::obase_boundary_p(int t0, int t1, grid_info<N_RANK
 					l_son_grid.dx0[i] = -slope_[i];
 					l_son_grid.x1[i] = l_start + sep * j;
 					l_son_grid.dx1[i] = slope_[i];
-                    cilk_spawn obase_boundary_p(t0, t1, l_son_grid, bf);
+                    cilk_spawn [&]{obase_boundary_p(t0, t1, l_son_grid, bf);}();
 				}
 				if (l_start == phys_grid_.x0[i] && l_end == phys_grid_.x1[i]) {
             //        printf("merge triagles!\n");
@@ -2921,21 +2921,21 @@ inline void Algorithm<N_RANK>::obase_boundary_p(int t0, int t1, grid_info<N_RANK
 					l_son_grid.dx0[i] = -slope_[i];
 					l_son_grid.x1[i] = l_end;
 					l_son_grid.dx1[i] = slope_[i];
-                    cilk_spawn obase_boundary_p(t0, t1, l_son_grid, bf);
+                    cilk_spawn [&]{obase_boundary_p(t0, t1, l_son_grid, bf);}();
 				} else {
 					if (l_father_grid.dx0[i] != slope_[i]) {
 						l_son_grid.x0[i] = l_start; 
 						l_son_grid.dx0[i] = l_father_grid.dx0[i];
 						l_son_grid.x1[i] = l_start; 
 						l_son_grid.dx1[i] = slope_[i];
-                        cilk_spawn obase_boundary_p(t0, t1, l_son_grid, bf);
+                        cilk_spawn [&]{obase_boundary_p(t0, t1, l_son_grid, bf);}();
 					}
 					if (l_father_grid.dx1[i] != -slope_[i]) {
 						l_son_grid.x0[i] = l_end; 
 						l_son_grid.dx0[i] = -slope_[i];
 						l_son_grid.x1[i] = l_end; 
 						l_son_grid.dx1[i] = l_father_grid.dx1[i];
-                        cilk_spawn obase_boundary_p(t0, t1, l_son_grid, bf);
+                        cilk_spawn [&]{obase_boundary_p(t0, t1, l_son_grid, bf);}();
 					}
 				}
 				cut_yet = true;
@@ -2996,9 +2996,9 @@ inline void Algorithm<N_RANK>::obase_bicut_boundary_p(int t0, int t1, grid_info<
 			l_son_grid.x1[i] = l_start + sep;
 			l_son_grid.dx1[i] = -slope_[i];
             if (call_boundary) {
-                cilk_spawn obase_bicut_boundary_p(t0, t1, l_son_grid, f, bf);
+                cilk_spawn [&]{obase_bicut_boundary_p(t0, t1, l_son_grid, f, bf);}();
             } else {
-                cilk_spawn obase_bicut(t0, t1, l_son_grid, f);
+                cilk_spawn [&]{obase_bicut(t0, t1, l_son_grid, f);}();
             }
 
 			l_son_grid.x0[i] = l_start + sep;
@@ -3017,9 +3017,9 @@ inline void Algorithm<N_RANK>::obase_bicut_boundary_p(int t0, int t1, grid_info<
 			l_son_grid.x1[i] = l_start + sep;
 			l_son_grid.dx1[i] = slope_[i];
             if (call_boundary) {
-                cilk_spawn obase_bicut_boundary_p(t0, t1, l_son_grid, f, bf);
+                cilk_spawn [&]{obase_bicut_boundary_p(t0, t1, l_son_grid, f, bf);}();
             } else {
-                cilk_spawn obase_bicut(t0, t1, l_son_grid, f);
+                cilk_spawn [&]{obase_bicut(t0, t1, l_son_grid, f);}();
             }
 
 			if (l_start == phys_grid_.x0[i] && l_end == phys_grid_.x1[i]) {
@@ -3029,9 +3029,9 @@ inline void Algorithm<N_RANK>::obase_bicut_boundary_p(int t0, int t1, grid_info<
 				l_son_grid.x1[i] = l_end;
 				l_son_grid.dx1[i] = slope_[i];
                 if (call_boundary) {
-                    cilk_spawn obase_bicut_boundary_p(t0, t1, l_son_grid, f, bf);
+                    cilk_spawn [&]{obase_bicut_boundary_p(t0, t1, l_son_grid, f, bf);}();
                 } else {
-                    cilk_spawn obase_bicut(t0, t1, l_son_grid, f);
+                    cilk_spawn [&]{obase_bicut(t0, t1, l_son_grid, f);}();
                 }
 			} else {
 				if (l_father_grid.dx0[i] != slope_[i]) {
@@ -3040,9 +3040,9 @@ inline void Algorithm<N_RANK>::obase_bicut_boundary_p(int t0, int t1, grid_info<
 					l_son_grid.x1[i] = l_start; 
 					l_son_grid.dx1[i] = slope_[i];
                     if (call_boundary) {
-                        cilk_spawn obase_bicut_boundary_p(t0, t1, l_son_grid, f, bf);
+                        cilk_spawn [&]{obase_bicut_boundary_p(t0, t1, l_son_grid, f, bf);}();
                     } else {
-                        cilk_spawn obase_bicut(t0, t1, l_son_grid, f);
+                        cilk_spawn [&]{obase_bicut(t0, t1, l_son_grid, f);}();
                     }
 				}
 				if (l_father_grid.dx1[i] != -slope_[i]) {
@@ -3051,9 +3051,9 @@ inline void Algorithm<N_RANK>::obase_bicut_boundary_p(int t0, int t1, grid_info<
 					l_son_grid.x1[i] = l_end; 
 					l_son_grid.dx1[i] = l_father_grid.dx1[i];
                     if (call_boundary) {
-                        cilk_spawn obase_bicut_boundary_p(t0, t1, l_son_grid, f, bf);
+                        cilk_spawn [&]{obase_bicut_boundary_p(t0, t1, l_son_grid, f, bf);}();
                     } else {
-                        cilk_spawn obase_bicut(t0, t1, l_son_grid, f);
+                        cilk_spawn [&]{obase_bicut(t0, t1, l_son_grid, f);}();
                     }
 				}
 			}
@@ -3166,9 +3166,9 @@ inline void Algorithm<N_RANK>::obase_boundary_p(int t0, int t1, grid_info<N_RANK
 					l_son_grid.x1[i] = l_start + sep * (j+1);
 					l_son_grid.dx1[i] = -slope_[i];
                     if (call_boundary) {
-                        cilk_spawn obase_boundary_p(t0, t1, l_son_grid, f, bf);
+                        cilk_spawn [&]{obase_boundary_p(t0, t1, l_son_grid, f, bf);}();
                     } else {
-                        cilk_spawn obase_adaptive(t0, t1, l_son_grid, f);
+                        cilk_spawn [&]{obase_adaptive(t0, t1, l_son_grid, f);}();
                     }
 				}
 				l_son_grid.x0[i] = l_start + sep * j;
@@ -3190,9 +3190,9 @@ inline void Algorithm<N_RANK>::obase_boundary_p(int t0, int t1, grid_info<N_RANK
 					l_son_grid.x1[i] = l_start + sep * j;
 					l_son_grid.dx1[i] = slope_[i];
                     if (call_boundary) {
-                        cilk_spawn obase_boundary_p(t0, t1, l_son_grid, f, bf);
+                        cilk_spawn [&]{obase_boundary_p(t0, t1, l_son_grid, f, bf);}();
                     } else {
-                        cilk_spawn obase_adaptive(t0, t1, l_son_grid, f);
+                        cilk_spawn [&]{obase_adaptive(t0, t1, l_son_grid, f);}();
                     }
 				}
 				if (l_start == phys_grid_.x0[i] && l_end == phys_grid_.x1[i]) {
@@ -3202,9 +3202,9 @@ inline void Algorithm<N_RANK>::obase_boundary_p(int t0, int t1, grid_info<N_RANK
 					l_son_grid.x1[i] = l_end;
 					l_son_grid.dx1[i] = slope_[i];
                     if (call_boundary) {
-                        cilk_spawn obase_boundary_p(t0, t1, l_son_grid, f, bf);
+                        cilk_spawn [&]{obase_boundary_p(t0, t1, l_son_grid, f, bf);}();
                     } else {
-                        cilk_spawn obase_adaptive(t0, t1, l_son_grid, f);
+                        cilk_spawn [&]{obase_adaptive(t0, t1, l_son_grid, f);}();
                     }
 				} else {
 					if (l_father_grid.dx0[i] != slope_[i]) {
@@ -3213,9 +3213,9 @@ inline void Algorithm<N_RANK>::obase_boundary_p(int t0, int t1, grid_info<N_RANK
 						l_son_grid.x1[i] = l_start; 
 						l_son_grid.dx1[i] = slope_[i];
                         if (call_boundary) {
-                            cilk_spawn obase_boundary_p(t0, t1, l_son_grid, f, bf);
+                            cilk_spawn [&]{obase_boundary_p(t0, t1, l_son_grid, f, bf);}();
                         } else {
-                            cilk_spawn obase_adaptive(t0, t1, l_son_grid, f);
+                            cilk_spawn [&]{obase_adaptive(t0, t1, l_son_grid, f);}();
                         }
 					}
 					if (l_father_grid.dx1[i] != -slope_[i]) {
@@ -3224,9 +3224,9 @@ inline void Algorithm<N_RANK>::obase_boundary_p(int t0, int t1, grid_info<N_RANK
 						l_son_grid.x1[i] = l_end; 
 						l_son_grid.dx1[i] = l_father_grid.dx1[i];
                         if (call_boundary) {
-                            cilk_spawn obase_boundary_p(t0, t1, l_son_grid, f, bf);
+                            cilk_spawn [&]{obase_boundary_p(t0, t1, l_son_grid, f, bf);}();
                         } else {
-                            cilk_spawn obase_adaptive(t0, t1, l_son_grid, f);
+                            cilk_spawn [&]{obase_adaptive(t0, t1, l_son_grid, f);}();
                         }
 					}
 				}
