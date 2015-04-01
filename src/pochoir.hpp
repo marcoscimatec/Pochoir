@@ -419,7 +419,8 @@ void Pochoir<N_RANK>::Run_Obase(int timestep, F const & f) {
 /* obase for interior and ExecSpec for boundary */
 template <int N_RANK> template <typename F, typename BF>
 void Pochoir<N_RANK>::Run_Obase(int timestep, F const & f, BF const & bf) {
-    int l_total_points = 1;
+	// Commented out to remove warning.    
+	// int l_total_points = 1;
     Algorithm<N_RANK> algor(slope_);
     algor.set_phys_grid(phys_grid_);
     algor.set_thres(arr_type_size_);

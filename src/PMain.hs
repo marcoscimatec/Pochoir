@@ -52,12 +52,32 @@ main = do args <- getArgs
           whilst (mode == PHelp) $ do
              printOptions
              exitFailure
+
+          ccEnvValue <- Control.catch (getEnv "CXX")
+                         (\e -> do let err = show (e::Control.IOException)
+                                   return err)
+
+          let useGcc = if ccEnvValue == "g++"
+                       then True
+                       else False
+          
+          whilst (useGcc == True) $ do
+             putStrLn ("CXX variable set to g++ detected. GNU compiler will be used.")
+
           whilst (mode /= PNoPP) $ do
-             ppopp (mode, debug, showFile, userArgs) (zip inFiles inDirs)
+             ppopp (mode, debug, showFile, userArgs, ccEnvValue) (zip inFiles inDirs)
           -- pass everything to icc after preprocessing and Pochoir optimization
-          let iccArgs = userArgs ++ iccFlags
-          putStrLn (icc ++ " " ++ intercalate " " iccArgs)
-          rawSystem icc iccArgs
+
+
+          let iccArgs = userArgs ++ ["-std=c++11"]
+          if useGcc == False
+             then putStrLn (icc ++ " " ++ intercalate " " iccArgs)
+             else putStrLn (gcc ++ " " ++ intercalate " " iccArgs ++ " " ++ intercalate " " gccFlags)
+          
+          if useGcc == False
+             then rawSystem icc iccArgs
+             else rawSystem gcc (iccArgs ++ gccFlags)
+
           whilst (showFile == False) $ do
              let outFiles = map (rename "_pochoir") inFiles 
              removeFile $ intercalate " " outFiles
@@ -66,9 +86,9 @@ whilst :: Bool -> IO () -> IO ()
 whilst True action = action
 whilst False action = return () 
 
-ppopp :: (PMode, Bool, Bool, [String]) -> [(String, String)] -> IO ()
-ppopp (_, _, _, _) [] = return ()
-ppopp (mode, debug, showFile, userArgs) ((inFile, inDir):files) = 
+ppopp :: (PMode, Bool, Bool, [String], [Char]) -> [(String, String)] -> IO ()
+ppopp (_, _, _, _, _) [] = return ()
+ppopp (mode, debug, showFile, userArgs, compilerName) ((inFile, inDir):files) = 
     do putStrLn ("pochoir called with mode =" ++ show mode)
        pathLib <- Control.catch (getEnv "POCHOIR_LIB_PATH")
                          (\e -> do let err = show (e::Control.IOException)
@@ -97,9 +117,16 @@ ppopp (mode, debug, showFile, userArgs) ((inFile, inDir):files) =
              then iccPPFlags ++ envPath ++ [inFile]
              else iccDebugPPFlags ++ envPath ++ [inFile] 
        -- a pass of icc preprocessing
-       putStrLn (icc ++ " " ++ intercalate " " iccPPArgs)
-       rawSystem icc iccPPArgs
+       if compilerName /= "g++"
+          then putStrLn (icc ++ " " ++ intercalate " " iccPPArgs)
+          else putStrLn (gcc ++ " " ++ intercalate " " (gccFlags ++ gccPPFlags ++ ["-o", getMidFile inFile] ++ envPath ++ [inFile]))
+
        -- a pass of pochoir compilation
+       --let gccParams = gccFlags ++ envPath ++ [inFile]
+       if compilerName /= "g++"
+          then rawSystem icc iccPPArgs
+          else rawSystem gcc (gccFlags ++ gccPPFlags ++ ["-o", getMidFile inFile] ++ envPath ++ [inFile])
+
        whilst (mode /= PDebug) $ do
            let outFile = rename "_pochoir" inFile
            inh <- openFile iccPPFile ReadMode
@@ -113,7 +140,7 @@ ppopp (mode, debug, showFile, userArgs) ((inFile, inDir):files) =
            let outFile = rename "_pochoir" midFile
            putStrLn ("mv " ++ midFile ++ " " ++ outFile)
            renameFile midFile outFile
-       ppopp (mode, debug, showFile, userArgs) files
+       ppopp (mode, debug, showFile, userArgs, compilerName) files
 
 getMidFile :: String -> String
 getMidFile a  
@@ -148,6 +175,12 @@ iccDebugFlags = ["-DDEBUG", "-O0", "-g3", "-std=c++0x"]
 
 -- iccDebugPPFlags = ["-P", "-C", "-DCHECK_SHAPE", "-DDEBUG", "-g3", "-std=c++0x", "-include", "cilk_stub.h"]
 iccDebugPPFlags = ["-P", "-C", "-DCHECK_SHAPE", "-DDEBUG", "-g3", "-std=c++0x"]
+
+gcc = "g++"
+
+gccPPFlags = ["-E","-DNCHECK_SHAPE", "-DNDEBUG"]
+
+gccFlags = ["-fcilkplus", "-O3", "-std=c++11", "-Wall", "-Wno-unknown-pragmas", "-Wno-strict-aliasing","-lcilkrts", "-lm"]
 
 
 parseArgs :: ([String], [String], PMode, Bool, Bool, [String]) -> [String] -> ([String], [String], PMode, Bool, Bool, [String])

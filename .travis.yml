@@ -5,8 +5,9 @@ before_install:
 compiler:
   - gcc ghc
 script:
+  - export CXX=g++
   - cd src/
   - make
   - cd ../examples/
   - make berkeley3d27pt
-  - ./3d27pt
+  - ./3d27pt 100 100 100
