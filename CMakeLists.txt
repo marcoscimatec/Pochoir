@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 2.8)
+
+# Name project
+project(Pochoir)
+
+set(POCHOIR_LIB_PATH "\"${CMAKE_INSTALL_PREFIX}/src/\"")
+set(PROJECT_SOURCE_DIR "${CMAKE_BINARY_DIR}/src")
+
+file(COPY "${CMAKE_SOURCE_DIR}/src" DESTINATION "${CMAKE_BINARY_DIR}")
+
+configure_file (
+  "${PROJECT_SOURCE_DIR}/PMain.hs.in"
+  "${PROJECT_SOURCE_DIR}/PMain.hs"
+  )
+
+EXEC_PROGRAM(make ARGS -C "${CMAKE_BINARY_DIR}/src")
+EXEC_PROGRAM(chmod ARGS +x "${CMAKE_BINARY_DIR}/pochoir")
+
+install(FILES "${CMAKE_SOURCE_DIR}/LICENSE" DESTINATION "${CMAKE_INSTALL_PREFIX}")
+install(PROGRAMS "${CMAKE_BINARY_DIR}/pochoir" DESTINATION "${CMAKE_INSTALL_PREFIX}")
+install(DIRECTORY "${CMAKE_BINARY_DIR}/src" DESTINATION "${CMAKE_INSTALL_PREFIX}" PATTERN "*.in" EXCLUDE)
+install(DIRECTORY examples/ DESTINATION examples)
