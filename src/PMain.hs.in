@@ -69,14 +69,14 @@ main = do args <- getArgs
           -- pass everything to icc after preprocessing and Pochoir optimization
 
 
-          let iccArgs = userArgs ++ ["-std=c++11"]
+          let cxxArgs = userArgs ++ ["-std=c++11"]
           if useGcc == False
-             then putStrLn (icc ++ " " ++ intercalate " " iccArgs)
-             else putStrLn (gcc ++ " " ++ intercalate " " iccArgs ++ " " ++ intercalate " " gccFlags)
+             then putStrLn (icc ++ " " ++ intercalate " " cxxArgs)
+             else putStrLn (gcc ++ " " ++ intercalate " " cxxArgs ++ " " ++ intercalate " " gccFlags)
           
           if useGcc == False
-             then rawSystem icc iccArgs
-             else rawSystem gcc (iccArgs ++ gccFlags)
+             then rawSystem icc cxxArgs
+             else rawSystem gcc (cxxArgs ++ gccFlags)
 
           whilst (showFile == False) $ do
              let outFiles = map (rename "_pochoir") inFiles 
