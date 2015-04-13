@@ -1,13 +1,14 @@
 #!/bin/bash
 CC = ../pochoir
 
-#Compile sources with Intel compiler uncomment 6; comment out 9 and 10
-#ICC = icpc
-#OPT_FLAGS = -O3 -DNDEBUG -Wall  -funroll-loops -xHOST -fno-alias -fno-fnalias -fp-model precise -std=c++0x 
+#CXX=icpc
+CXX=g++
 
-#Compile sources with GNU compiler uncomment 9 and 10; comment 6
-export CXX = g++
-OPT_FLAGS = 
+ifeq  ($(CXX), g++)
+	OPT_FLAGS = 
+else
+	OPT_FLAGS = -O3 -DNDEBUG -Wall  -funroll-loops -xHOST -fno-alias -fno-fnalias -fp-model precise -std=c++0x 
+endif
 
 POCHOIR_DEBUG_FLAGS = -O0 -g3 -DDEBUG -debug -Wall -Werror -std=c++0x
 #ICC_DEBUG_FLAGS = -O0 -g3 -DDEBUG -Wall -Werror -std=c++0x -I${INTEL_CILK_HEADER} -include cilk_stub.h  
