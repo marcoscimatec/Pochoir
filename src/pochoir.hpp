@@ -365,7 +365,7 @@ void Pochoir<N_RANK>::Run(int timestep, F const & f, BF const & bf) {
      */
     timestep_ = timestep;
     checkFlags();
-#pragma isat marker M2_begin
+//#pragma isat marker M2_begin
 #if BICUT
 #if 1
     algor.walk_bicut_boundary_p(0+time_shift_, timestep+time_shift_, logic_grid_, f, bf);
@@ -375,7 +375,7 @@ void Pochoir<N_RANK>::Run(int timestep, F const & f, BF const & bf) {
 #else
     algor.walk_ncores_boundary_p(0+time_shift_, timestep+time_shift_, logic_grid_, f, bf);
 #endif
-#pragma isat marker M2_end
+//#pragma isat marker M2_end
 }
 
 /* obase for zero-padded area! */
@@ -394,7 +394,7 @@ void Pochoir<N_RANK>::Run_Obase(int timestep, F const & f) {
 #pragma isat marker M2_end
 #else
 //     fprintf(stderr, "Call shorter_duo_sim_obase_bicut\n");
-#pragma isat marker M2_begin
+//#pragma isat marker M2_begin
    // algor.sim_obase_bicut(0+time_shift_, timestep+time_shift_, logic_grid_, f);
 #if 1
     // printf("shorter_duo_sim_obase_bicut!\n");
@@ -404,7 +404,7 @@ void Pochoir<N_RANK>::Run_Obase(int timestep, F const & f) {
     algor.stevenj(0+time_shift_, timestep+time_shift_, logic_grid_, f);
 #endif
     // algor.duo_sim_obase_bicut(0+time_shift_, timestep+time_shift_, logic_grid_, f);
-#pragma isat marker M2_end
+//#pragma isat marker M2_end
 #if STAT
     for (int i = 1; i < SUPPORT_RANK; ++i) {
         fprintf(stderr, "sim_count_cut[%d] = %ld\n", i, algor.sim_count_cut[i].get_value());
@@ -419,7 +419,8 @@ void Pochoir<N_RANK>::Run_Obase(int timestep, F const & f) {
 /* obase for interior and ExecSpec for boundary */
 template <int N_RANK> template <typename F, typename BF>
 void Pochoir<N_RANK>::Run_Obase(int timestep, F const & f, BF const & bf) {
-    int l_total_points = 1;
+	// Commented out to remove warning.    
+	// int l_total_points = 1;
     Algorithm<N_RANK> algor(slope_);
     algor.set_phys_grid(phys_grid_);
     algor.set_thres(arr_type_size_);
@@ -436,7 +437,7 @@ void Pochoir<N_RANK>::Run_Obase(int timestep, F const & f, BF const & bf) {
 #pragma isat marker M2_end
 #else
 //    fprintf(stderr, "Call sim_obase_bicut_P\n");
-#pragma isat marker M2_begin
+//#pragma isat marker M2_begin
 #if 1
     // printf("shorter_duo_sim_obase_bicut_p!\n");
     algor.shorter_duo_sim_obase_bicut_p(0+time_shift_, timestep+time_shift_, logic_grid_, f, bf);
@@ -444,7 +445,7 @@ void Pochoir<N_RANK>::Run_Obase(int timestep, F const & f, BF const & bf) {
     printf("stevenj_p!\n");
     algor.stevenj_p(0+time_shift_, timestep+time_shift_, logic_grid_, f, bf);
 #endif
-#pragma isat marker M2_end
+//#pragma isat marker M2_end
 #if STAT
     for (int i = 1; i < SUPPORT_RANK; ++i) {
         fprintf(stderr, "sim_count_cut[%d] = %ld\n", i, algor.sim_count_cut[i].get_value());
@@ -452,9 +453,9 @@ void Pochoir<N_RANK>::Run_Obase(int timestep, F const & f, BF const & bf) {
 #endif
 #endif
 #else
-#pragma isat marker M2_begin
+//#pragma isat marker M2_begin
     algor.obase_boundary_p(0+time_shift_, timestep+time_shift_, logic_grid_, f, bf);
-#pragma isat marker M2_end
+//#pragma isat marker M2_end
 #endif
 }
 

@@ -52,7 +52,7 @@ struct meta_grid_boundary <8, BF>{
         for (int k = grid.x0[5]; k < grid.x1[5]; ++k) {
             int new_k = pmod_lu(k, initial_grid.x0[5], initial_grid.x1[5]);
             for (int l = grid.x0[4]; l < grid.x1[4]; ++l) {
-                int new_l = pmod_lu(l, initial_gird.x0[4], initial_grid.x1[4]);
+                int new_l = pmod_lu(l, initial_grid.x0[4], initial_grid.x1[4]);
         for (int m = grid.x0[3]; m < grid.x1[3]; ++m) {
             int new_m = pmod_lu(m, initial_grid.x0[3], initial_grid.x1[3]);
             for (int n = grid.x0[2]; n < grid.x1[2]; ++n) {
@@ -83,7 +83,7 @@ struct meta_grid_boundary <7, BF>{
         for (int k = grid.x0[4]; k < grid.x1[4]; ++k) {
             int new_k = pmod_lu(k, initial_grid.x0[4], initial_grid.x1[4]);
             for (int l = grid.x0[3]; l < grid.x1[3]; ++l) {
-                int new_l = pmod_lu(l, initial_gird.x0[3], initial_grid.x1[3]);
+                int new_l = pmod_lu(l, initial_grid.x0[3], initial_grid.x1[3]);
         for (int m = grid.x0[2]; m < grid.x1[2]; ++m) {
             int new_m = pmod_lu(m, initial_grid.x0[2], initial_grid.x1[2]);
             for (int n = grid.x0[1]; n < grid.x1[1]; ++n) {
@@ -112,7 +112,7 @@ struct meta_grid_boundary <6, BF>{
         for (int k = grid.x0[3]; k < grid.x1[3]; ++k) {
             int new_k = pmod_lu(k, initial_grid.x0[3], initial_grid.x1[3]);
             for (int l = grid.x0[2]; l < grid.x1[2]; ++l) {
-                int new_l = pmod_lu(l, initial_gird.x0[2], initial_grid.x1[2]);
+                int new_l = pmod_lu(l, initial_grid.x0[2], initial_grid.x1[2]);
         for (int m = grid.x0[1]; m < grid.x1[1]; ++m) {
             int new_m = pmod_lu(m, initial_grid.x0[1], initial_grid.x1[1]);
             for (int n = grid.x0[0]; n < grid.x1[0]; ++n) {
@@ -138,7 +138,7 @@ struct meta_grid_boundary <5, BF>{
         for (int k = grid.x0[2]; k < grid.x1[2]; ++k) {
             int new_k = pmod_lu(k, initial_grid.x0[2], initial_grid.x1[2]);
             for (int l = grid.x0[1]; l < grid.x1[1]; ++l) {
-                int new_l = pmod_lu(l, initial_gird.x0[1], initial_grid.x1[1]);
+                int new_l = pmod_lu(l, initial_grid.x0[1], initial_grid.x1[1]);
         for (int m = grid.x0[0]; m < grid.x1[0]; ++m) {
             int new_m = pmod_lu(m, initial_grid.x0[0], initial_grid.x1[0]);
                 if (inRun) {
@@ -162,7 +162,7 @@ struct meta_grid_boundary <4, BF>{
         for (int k = grid.x0[1]; k < grid.x1[1]; ++k) {
             int new_k = pmod_lu(k, initial_grid.x0[1], initial_grid.x1[1]);
             for (int l = grid.x0[0]; l < grid.x1[0]; ++l) {
-                int new_l = pmod_lu(l, initial_gird.x0[0], initial_grid.x1[0]);
+                int new_l = pmod_lu(l, initial_grid.x0[0], initial_grid.x1[0]);
                 if (inRun) {
                     home_cell_[4] = new_l; home_cell_[3] = new_k;
                     home_cell_[2] = new_j; home_cell_[1] = new_i;

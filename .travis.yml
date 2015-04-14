@@ -2,11 +2,20 @@ language: cpp haskell
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y ghc ghc-prof libghc-parsec3-dev
+  - sudo apt-get install -y gcc-multilib
+  - wget https://www.cilkplus.org/sites/default/files/cilk-gcc-compiler/cilkplus-4_8-install.tar_0.bz2
+  - tar jxf cilkplus-4_8-install.tar_0.bz2
 compiler:
   - gcc ghc
 script:
-  - cd src/
-  - make
-  - cd ../examples/
-  - make berkeley3d27pt
-  - ./3d27pt
+  - export CXX=g++
+  - export LD_LIBRARY_PATH=$(pwd)/cilkplus-4_8-install/lib64:$(pwd)/cilkplus-4_8-install/lib:$LD_LIBRARY_PATH
+  - export LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LIBRARY_PATH
+  - export PATH=$(pwd)/cilkplus-4_8-install/bin:$PATH
+  - mkdir build
+  - cd build/
+  - cmake ../ -DCMAKE_INSTALL_PREFIX=$(pwd)/install
+  - make install
+  - cd $(pwd)/install/examples
+  - make heat_P
+  - ./heat_2D_P 100 100

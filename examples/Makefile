@@ -1,10 +1,18 @@
 #!/bin/bash
 CC = ../pochoir
-ICC = icpc
-OPT_FLAGS = -O3 -DNDEBUG -Wall -funroll-loops -xHOST -fno-alias -fno-fnalias -fp-model precise -std=c++0x
-POCHOIR_DEBUG_FLAGS = -O0 -g3 -DDEBUG -debug -Wall -std=c++0x
+
+#CXX=icpc
+CXX=g++
+
+ifeq  ($(CXX), g++)
+	OPT_FLAGS = 
+else
+	OPT_FLAGS = -O3 -DNDEBUG -Wall  -funroll-loops -xHOST -fno-alias -fno-fnalias -fp-model precise -std=c++0x 
+endif
+
+POCHOIR_DEBUG_FLAGS = -O0 -g3 -DDEBUG -debug -Wall -Werror -std=c++0x
 #ICC_DEBUG_FLAGS = -O0 -g3 -DDEBUG -Wall -Werror -std=c++0x -I${INTEL_CILK_HEADER} -include cilk_stub.h  
-ICC_DEBUG_FLAGS = -O3 -Wall -std=c++0x -I${INTEL_CILK_HEADER} -include cilk_stub.h  
+ICC_DEBUG_FLAGS = -O3 -Wall -Werror -std=c++0x -I${INTEL_CILK_HEADER} -include cilk_stub.h  
 heat_1D_NP : tb_heat_1D_NP.cpp
 #   Phase-II compilation
 	${CC} -o heat_1D_NP ${OPT_FLAGS} tb_heat_1D_NP.cpp

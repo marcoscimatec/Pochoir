@@ -177,7 +177,7 @@ gccPPFlags = ["-E","-DNCHECK_SHAPE", "-DNDEBUG"]
 
 gccFlags = ["-fcilkplus", "-O3", "-std=c++11", "-Wall", "-Wno-unknown-pragmas", "-Wno-strict-aliasing","-lcilkrts", "-lm"]
 
-pochoirLibConfigPath = "/home/marcos/Work/PochoirInstall/src/"
+pochoirLibConfigPath = @POCHOIR_LIB_PATH@
 
 parseArgs :: ([String], [String], PMode, Bool, Bool, [String]) -> [String] -> ([String], [String], PMode, Bool, Bool, [String])
 parseArgs (inFiles, inDirs, mode, debug, showFile, userArgs) aL 
